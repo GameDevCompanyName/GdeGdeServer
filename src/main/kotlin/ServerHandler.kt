@@ -38,6 +38,7 @@ class ServerHandler : SimpleChannelHandler() {
     override fun writeRequested(ctx: ChannelHandlerContext, e: MessageEvent) {
         // /d/ выступает в качестве разделителя между сообщениями
         val message = e.message.toString() + "/d/"
+        logger.info("Отправляю сообщение: $message")
         Channels.write(
             ctx,
             e.future,
@@ -52,10 +53,5 @@ class ServerHandler : SimpleChannelHandler() {
         e.cause.printStackTrace()
         //        ServerMethods.disconnectReceived(e.getChannel());
         e.channel.close()
-    }
-
-    companion object {
-
-        private val className = "ServerHandler"
     }
 }

@@ -5,48 +5,57 @@ import java.util.regex.Pattern
 
 object ServerMethods {
     private val logger = LoggerFactory.getLogger(ServerMethods::class.java)
+    private lateinit var dbConnector: IDBConnector
+
+    init {
+        //TODO добавить конструктор
+        dbConnector.initDBConnector()
+    }
 
     fun loginAttemptReceived(userChannel: Channel, login: String, password: String) {
         logger.info("Обрабатываю попытку залогиниться по логину: $login")
 
-        val userOnline = Broadcaster.checkIfUserOnline(login)
-        if (userOnline) {
+        if (Broadcaster.checkIfUserOnline(login)) {
             logger.info("Юзер с таким именем уже онлайн: $login")
-            sendMessageUserAlreadyOnline(userChannel)
+            userChannel.write(ServerMessage.loginAlreadyError())
             return
         }
 
-        val userExists = DBConnector.searchForUser(login)
-        if (userExists) {
+        //Авторизация пользователя
+        var user = dbConnector.getUser(login)
+        if (user != null) {
             logger.info("Такой пользователь уже есть в базе првоеряю пароль для: $login")
-            val passIsCorrect = DBConnector.checkLoginAttempt(login, password)
-            if (passIsCorrect) {
+            if (password.equals(user.pass)) {
                 logger.info("Верный пароль для: $login")
-                val newUser = initUser(userChannel, login)
-                sendMesageUserLoginSuccess(userChannel)
-                sendMessageUserColor(userChannel, login, newUser.color!!)
-                Broadcaster.userLoggedIn(userChannel, newUser)
+                user.userChannel = userChannel
+                user.sendMessage(ServerMessage.loginSuccess())
+                user.sendMessage(ServerMessage.userColor(user.login, user.color!!))
+                Broadcaster.userLoggedIn(user)
             } else {
                 logger.info("Неверный пароль для: $login")
-                sendMesssageUserWrongPassword(userChannel)
+                user.sendMessage(ServerMessage.loginWrongError())
             }
         }
 
-        if (!userExists) {
+        //Регистрация пользователя
+        if (user == null) {
             logger.info("Такого пользователя в базе ещё нет, создаю нового для: $login")
-            DBConnector.insertNewUser(login, password)
+            user = dbConnector.addNewUser(login, password, "")//TODO добавить цвет из утилит
             logger.info("Пользователь создан: $login")
-            val newUser = initUser(userChannel, login)
-            sendMesageUserLoginSuccess(userChannel)
-            sendMessageUserColor(userChannel, login, newUser.color!!)
-            Broadcaster.userLoggedIn(userChannel, newUser)
+            if (user != null) {
+                user.userChannel = userChannel
+                user.sendMessage(ServerMessage.loginSuccess())
+                Broadcaster.userLoggedIn(user)
+            } else {
+                logger.info("Не удалось создать пользователя: $login")
+                userChannel.write(ServerMessage.serverMessage("Не удалось зарегистрировать пользователя!"))
+            }
         }
     }
 
     fun messageReceived(userChannel: Channel, text: String) {
         logger.info("Проверяю залогинен ли канал, пытающийся отправить сообщение.")
-        val userIsLogged = Broadcaster.checkIfChannelLogged(userChannel)
-        if (userIsLogged) {
+        if (Broadcaster.checkIfChannelLogged(userChannel)) {
             logger.info("Канал залогинен, передаю сообщение в Broadcaster.")
             Broadcaster.messageBroadcast(userChannel, text)
         } else {
@@ -56,7 +65,8 @@ object ServerMethods {
 
     fun pingReceived(userChannel: Channel) {
         logger.info("Пришёл запрос пинга.")
-        sendMessageUserPong(userChannel)
+        logger.info("Отвечаю понг...")
+        userChannel.write(ServerMessage.serverPong())
     }
 
     fun disconnectReceived(userChannel: Channel) {
@@ -69,8 +79,7 @@ object ServerMethods {
     fun commandReceived(userChannel: Channel, text: String) {
         var command = text
         logger.info("Проверяю залогинен ли канал, пытающийся выполнить команду.")
-        val userIsLogged = Broadcaster.checkIfChannelLogged(userChannel)
-        if (userIsLogged) {
+        if (Broadcaster.checkIfChannelLogged(userChannel)) {
             logger.info("Канал залогинен, передаю команду в Commands.")
             val pattern = Pattern.compile("^/[a-zA-Z0-9\\s]+$")
             val m = pattern.matcher(command)
@@ -81,7 +90,7 @@ object ServerMethods {
                 Commands.executeUserCommand(userChannel, commands)
             } else {
                 logger.info("Команда некорректна.")
-                sendMessageUser(userChannel, ServerMessage.serverMessage("Некорретная команда."))
+                userChannel.write(ServerMessage.serverMessage("Некорретная команда."))
             }
         } else {
             logger.info("Канал НЕ залогинен и не может выполнять команды.")
@@ -95,64 +104,21 @@ object ServerMethods {
             for (i in 2 until commands.size - 1)
                 stringBuilder.append(commands[i]).append(" ")
             stringBuilder.append(commands[commands.size - 1])
-            sendMessageUser(
-                userChannel,
-                ServerMessage.serverMessage(stringBuilder.toString())
-            )
+            userChannel.write(ServerMessage.serverMessage(stringBuilder.toString()))
         } else {
-            sendMessageUser(
-                userChannel,
-                ServerMessage.serverMessage("Hello, World!")
-            )
+            userChannel.write(ServerMessage.serverMessage("Hello, World!"))
         }
     }
 
-    fun kickUser(login: String) {
-        Broadcaster.userKicked(login)
-        sendServerMessageAll("$login был исключен.") // TODO может стои твызвать метод из Broadcast?
+    fun kickUser(userChannel: Channel?, login: String) {
+        if (userChannel == null || Broadcaster.getUser(userChannel).role.equals("admin")) {
+            Broadcaster.userKicked(login)
+            Broadcaster.serverMessageBroadcast("$login был исключен.")
+        }
     }
 
-    fun sendServerMessageAll(text: String) {
-        logger.info("Отправляю сервеное сообщение.")
-        Broadcaster.serverMessageBroadcast(text) // TODO может стои твызвать метод из Broadcast?
-    }
-
-    fun sendMessageUser(userChannel: Channel, message: String) {
-        logger.info("Пишу сообщение в канал: $message")
-        userChannel.write(message)
-    }
-
-    private fun initUser(userChannel: Channel, login: String): User {
-        logger.info("Инициализирую нового пользователя: $login")
-        val userColor = DBConnector.getUserColor(login)
-        val userRole = DBConnector.getUserRole(login)
-        val newUser = User(userChannel, login, userColor, userRole)
-        logger.info("Пользователь проинициализирован.")
-        return newUser
-    }
-
-    private fun sendMessageUserAlreadyOnline(userChannel: Channel) {
-        logger.info("Отправляю сообщение о том, что такой пользователь уже залогинен.")
-        sendMessageUser(userChannel, ServerMessage.loginAlreadyError())
-    }
-
-    private fun sendMesageUserLoginSuccess(userChannel: Channel) {
-        logger.info("Отправляю сообщение об удачном логине.")
-        sendMessageUser(userChannel, ServerMessage.loginSuccess())
-    }
-
-    private fun sendMesssageUserWrongPassword(userChannel: Channel) {
-        logger.info("Отправляю сообщение о неверном пароле.")
-        sendMessageUser(userChannel, ServerMessage.loginWrongError())
-    }
-
-    private fun sendMessageUserColor(userChannel: Channel, login: String, color: String) {
-        logger.info("Отправляю пользователю его цвет.")
-        sendMessageUser(userChannel, ServerMessage.userColor(login, color))
-    }
-
-    private fun sendMessageUserPong(userChannel: Channel) {
-        logger.info("Отправляю ответ на эхо-запрос.")
-        sendMessageUser(userChannel, ServerMessage.serverPong())
+    fun getAchievements(userChannel: Channel): String{
+        val user = Broadcaster.getUser(userChannel)
+        return dbConnector.getAchievements(user.login).toString() //TODO сделать красивый вывод ачивок
     }
 }

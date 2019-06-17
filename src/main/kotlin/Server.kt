@@ -13,10 +13,7 @@ object Server {
     
     @JvmStatic
     fun main(args: Array<String>) {        
-        logger.info("Сервер запускается")
-        logger.info("Инициализация DBConnector...")
-        DBConnector.initDBConnector()
-        logger.info("DBConnector DONE")
+        logger.info("Сервер запускается...")
 
         logger.info("ChannelFactory...")
         val factory = NioServerSocketChannelFactory(
@@ -35,5 +32,6 @@ object Server {
         logger.info("Binding Channel DONE")
 
         CommandLine().run()
+        logger.info("Сервер запущен!")
     }
 }

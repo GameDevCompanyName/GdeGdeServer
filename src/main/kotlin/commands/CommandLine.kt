@@ -23,7 +23,7 @@ class CommandLine : Thread() {
                 val command = message.split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
                 Commands.executeServerCommand(command)
             } else {
-                ServerMethods.sendServerMessageAll(message)
+                Broadcaster.serverMessageBroadcast(ServerMessage.serverMessage(message))
                 println(" SERVER: $message")
             }//Иначе отправляем как сообщение в чат
         }

@@ -10,7 +10,7 @@ object Commands {
             "clients" -> for (user in Broadcaster.users)
                 print(user.login)
             "kick" -> if (commands.size == 2)
-                ServerMethods.kickUser(commands[1])
+                ServerMethods.kickUser(null, commands[1])
             else
                 print("Неверная команда.")
             "shutdown" -> {
@@ -22,38 +22,30 @@ object Commands {
     }
 
     fun executeUserCommand(userChannel: Channel, commands: Array<String>) {
-        if (commands.size == 1)
-            ServerMethods.sendMessageUser(
-                userChannel,
-                ServerMessage.serverMessage("Нет такой команды.")
-            )
+        if (commands.size == 1) {
+            userChannel.write(ServerMessage.serverMessage("Нет такой команды."))
+            return
+        }
         when (commands[1]) {
             "clients" -> for (user in Broadcaster.users)
-                ServerMethods.sendMessageUser(
-                    userChannel,
-                    ServerMessage.serverMessage(user.login + "\n")
-                )
+                userChannel.write(ServerMessage.serverMessage(user.login + "\n"))
             "echo" -> ServerMethods.echoReceived(userChannel, commands)
-            "help" -> ServerMethods.sendMessageUser(
-                userChannel,
-                ServerMessage.serverMessage(
-                    "Доступные команды:\n" +
-                            "/server clients\n" +
-                            "/server echo <your text>\n" +
-                            "/server help"
+            "help" ->
+                userChannel.write(
+                    ServerMessage.serverMessage(
+                        "Доступные команды:\n" +
+                                "/server clients\n" +
+                                "/server echo <your text>\n" +
+                                "/server help"
+                    ) //TODO добавить команд
                 )
-            )
-            "achievements" -> TODO() //Придумать как отправлять ачивки
-            "kick" -> if (commands.size == 2) {
-                //TODO добавить проверку роли видимо сюда
-                ServerMethods.kickUser(commands[1])}
-            else
-                print("Неверная команда.")
+            "achievements" -> userChannel.write(ServerMethods.getAchievements(userChannel))
+            "kick" -> if (commands.size == 3) {
+                ServerMethods.kickUser(userChannel, commands[2])
+            } else
+                userChannel.write(ServerMessage.serverMessage("Неверная команда!"))
             "shutdown" -> TODO() //Отключать сервер, если это сделал админ
-            else -> ServerMethods.sendMessageUser(
-                userChannel,
-                ServerMessage.serverMessage("Нет такой команды.")
-            )
+            else -> userChannel.write(ServerMessage.serverMessage("Нет такой команды."))
         }
     }
 

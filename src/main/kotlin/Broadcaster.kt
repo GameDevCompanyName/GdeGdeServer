@@ -24,10 +24,10 @@ object Broadcaster {
         return userOnline
     }
 
-    fun userLoggedIn(userChannel: Channel, newUser: User) {
+    fun userLoggedIn(newUser: User) {
         logger.info("Добавляю нового пользователя в список залогиненых: ${newUser.login}")
-        loggedChannels[userChannel] = newUser
-        loggedUsers[newUser] = userChannel
+        loggedChannels[newUser.userChannel!!] = newUser
+        loggedUsers[newUser] = newUser.userChannel!!
 
         sendMessageAll(
             ServerMessage.serverMessage(
@@ -51,9 +51,9 @@ object Broadcaster {
         logger.info("Отправляю всем пользователям сообщение пользователя.")
         sendMessageAll(
             sender!!, ServerMessage.userMessage(
-                sender.getLogin(),
+                sender.login,
                 text,
-                sender.getColor()
+                sender.color!!
             )
         )
     }
@@ -81,7 +81,7 @@ object Broadcaster {
     fun userKicked(login: String) {
         val kickUser = User(login)
         val userChannel = loggedUsers[kickUser]
-        ServerMethods.disconnectReceived(userChannel)
+        ServerMethods.disconnectReceived(userChannel!!)
     }
 
     private fun sendMessageAll(JSONMessage: String) {
@@ -96,5 +96,9 @@ object Broadcaster {
                 continue
             user.sendMessage(JSONMessage)
         }
+    }
+
+    fun getUser(userChannel: Channel): User {
+        return loggedChannels[userChannel]!!
     }
 }
