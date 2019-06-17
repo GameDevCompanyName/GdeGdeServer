@@ -1,3 +1,8 @@
+package database
+
+import Achievement
+import User
+
 interface IDBConnector {
 
     fun initDBConnector()
