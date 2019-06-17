@@ -2,12 +2,25 @@ package ru.gdcn.gdegde
 
 import org.jboss.netty.channel.Channel
 import org.slf4j.LoggerFactory
+import ru.gdcn.gdegde.database.DBEntity
 
-class User(private val userChannel: Channel?, var login: String, val pass: String?, val color: String?, val role: String?) {
+class User(private val userChannel: Channel?, var login: String, val pass: String?, val color: String?, val role: Role?) : DBEntity {
 
     private val logger = LoggerFactory.getLogger(User::class.java)
 
     constructor(login: String):this(null, login, null,null, null)
+
+    override fun getValuesMap(): Map<String, Any> {
+        val map = HashMap<String, Any>()
+        map["name"] = login
+        map["password"] = pass!!
+        map["color"] = color!!
+        when (role){
+            Role.USER -> map["fk_role"] = 1
+            Role.ADMIN -> map["fk_role"] = 2
+        }
+        return map
+    }
 
     fun sendMessage(message: String) {
         if (userChannel == null)

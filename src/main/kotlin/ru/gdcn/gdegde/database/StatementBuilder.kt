@@ -4,7 +4,7 @@ import java.lang.StringBuilder
 
 object StatementBuilder {
 
-    fun selectFieldsFromTable(tableName: String, limit: Int = 0, orderBy : String = "", vararg fields: String): String {
+    fun selectFieldsFromTable(tableName: String, limit: Int = 0, orderBy : String = "", whereCondition: String = "", vararg fields: String): String {
         val statementText = StringBuilder()
         statementText.append("SELECT ")
         if (fields.isEmpty()) {
@@ -13,6 +13,8 @@ object StatementBuilder {
             statementText.append(fields.joinToString()).append(' ')
         }
         statementText.append("FROM $tableName ")
+        if (whereCondition.isNotEmpty())
+            statementText.append("WHERE $whereCondition ")
         if (orderBy.isNotEmpty())
             statementText.append("ORDER BY $orderBy ")
         if (limit > 0) {
@@ -72,6 +74,10 @@ object StatementBuilder {
                 "   END LOOP;\n" +
                 "END; \n" +
                 "\$\$;"
+    }
+
+    fun procedureCall(procedureCall: String): String {
+        return "SELECT * FROM $procedureCall;"
     }
 
 }

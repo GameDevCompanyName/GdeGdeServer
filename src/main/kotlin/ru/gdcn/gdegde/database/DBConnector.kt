@@ -3,7 +3,9 @@ package ru.gdcn.gdegde.database
 import org.postgresql.util.PSQLException
 import org.slf4j.LoggerFactory
 import ru.gdcn.gdegde.Achievement
+import ru.gdcn.gdegde.Role
 import ru.gdcn.gdegde.User
+import ru.gdcn.gdegde.Utilities
 import ru.gdcn.gdegde.database.DBParameters.DB_HOST_DEFAULT
 import ru.gdcn.gdegde.database.DBParameters.DB_NAME_DEFAULT
 import ru.gdcn.gdegde.database.DBParameters.DB_PASS_DEFAULT
@@ -39,27 +41,67 @@ class DBConnector : IDBConnector {
     }
 
     override fun addNewUser(login: String, pass: String, color: String): User? {
-
+        val newUser = User(null, login, pass, color, Role.USER)
+        return try {
+            insertDataInTable("client", listOf(newUser))
+            newUser
+        } catch (e : PSQLException) {
+            logger.error("Could not insert new user!")
+            null
+        }
     }
 
     override fun getUser(login: String): User? {
-
+        val resultSet = getResultSetOfSelect(tableName = "client", limit = 1, whereCondition = "name = $login")
+        var user : User? = null
+        if (resultSet.next()){
+            user = User(
+                null,
+                resultSet.getString("name"),
+                resultSet.getString("password"),
+                resultSet.getString("color"),
+                Utilities.intToRole(resultSet.getInt("fk_role"))
+            )
+        }
+        return user
     }
 
     override fun getAchievements(login: String): Collection<Achievement> {
+        val resultSet = getResultSetOfProcedure("getClientAchievements($login)")
+        return Utilities.resultSetToAchievementCollection(resultSet)
+    }
 
+    private fun getResultSetOfProcedure(procedureCall: String): ResultSet {
+        logger.info("Executing procedure: $procedureCall")
+        if (connection == null) {
+            logger.error("Cannot execute procedure, because there's no connection to DB!")
+        }
+        logger.info("Creating statement")
+        val statement = connection!!.createStatement()
+        try {
+            logger.info("Executing query")
+            return statement.executeQuery(
+                StatementBuilder.procedureCall(
+                    procedureCall
+                )
+            )
+        } catch (e: PSQLException) {
+            logger.error("Error while executing SELECT!")
+            e.printStackTrace()
+            exitProcess(1)
+        }
     }
 
     fun getResultSetOfSelect(
         tableName: String,
         limit: Int = 0,
         orderBy: String = "",
-        vararg fields: String
+        vararg fields: String,
+        whereCondition: String = ""
     ): ResultSet {
         logger.info("Executing SELECT from table $tableName by fields")
         if (connection == null) {
             logger.error("Cannot execute SELECT, because there's no connection to DB")
-            exitProcess(1)
         }
         logger.info("Creating statement")
         val statement = connection!!.createStatement()
@@ -70,6 +112,7 @@ class DBConnector : IDBConnector {
                     tableName,
                     limit,
                     orderBy,
+                    whereCondition,
                     *fields
                 )
             )
