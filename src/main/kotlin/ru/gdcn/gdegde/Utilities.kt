@@ -1,3 +1,5 @@
+package ru.gdcn.gdegde
+
 object Utilities {
 
     private const val HEX_SOURCE = "0123456789ABDCEF"

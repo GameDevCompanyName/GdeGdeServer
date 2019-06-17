@@ -1,3 +1,5 @@
+package ru.gdcn.gdegde
+
 import org.jboss.netty.channel.Channel
 import org.slf4j.LoggerFactory
 import java.util.HashMap

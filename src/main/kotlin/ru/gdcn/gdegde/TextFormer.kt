@@ -1,3 +1,5 @@
+package ru.gdcn.gdegde
+
 object TextFormer {
 
     fun userDisconnected(login: String): String = "Пользователь $login вышел из чата."

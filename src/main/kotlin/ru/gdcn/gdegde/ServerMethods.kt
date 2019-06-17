@@ -1,3 +1,6 @@
+package ru.gdcn.gdegde
+
+import Commands
 import org.jboss.netty.channel.Channel
 import org.slf4j.LoggerFactory
 
@@ -47,7 +50,7 @@ object ServerMethods {
         logger.info("Проверяю залогинен ли канал, пытающийся отправить сообщение.")
         val userIsLogged = Broadcaster.checkIfChannelLogged(userChannel)
         if (userIsLogged) {
-            logger.info("Канал залогинен, передаю сообщение в Broadcaster.")
+            logger.info("Канал залогинен, передаю сообщение в ru.gdcn.gdegde.Broadcaster.")
             Broadcaster.messageBroadcast(userChannel, text)
         } else {
             logger.info("Канал НЕ залогинен и не может отправлять сообщения.")
@@ -81,7 +84,10 @@ object ServerMethods {
                 Commands.executeUserCommand(userChannel, commands)
             } else {
                 logger.info("Команда некорректна.")
-                sendMessageUser(userChannel, ServerMessage.serverMessage("Некорретная команда."))
+                sendMessageUser(
+                    userChannel,
+                    ServerMessage.serverMessage("Некорретная команда.")
+                )
             }
         } else {
             logger.info("Канал НЕ залогинен и не может выполнять команды.")

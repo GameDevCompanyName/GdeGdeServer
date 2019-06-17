@@ -1,3 +1,5 @@
+package ru.gdcn.gdegde
+
 import org.jboss.netty.buffer.ChannelBuffer
 import org.jboss.netty.buffer.ChannelBuffers
 import org.jboss.netty.channel.*
@@ -50,12 +52,12 @@ class ServerHandler : SimpleChannelHandler() {
     override fun exceptionCaught(ctx: ChannelHandlerContext, e: ExceptionEvent) {
         logger.info("Cловил Exception.")
         e.cause.printStackTrace()
-        //        ServerMethods.disconnectReceived(e.getChannel());
+        //        ru.gdcn.gdegde.ServerMethods.disconnectReceived(e.getChannel());
         e.channel.close()
     }
 
     companion object {
 
-        private val className = "ServerHandler"
+        private val className = "ru.gdcn.gdegde.ServerHandler"
     }
 }

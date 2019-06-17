@@ -1,3 +1,6 @@
+package ru.gdcn.gdegde
+
+import CommandLine
 import org.jboss.netty.bootstrap.ServerBootstrap
 import org.jboss.netty.channel.Channels
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory
