@@ -1,5 +1,8 @@
 import org.jboss.netty.channel.Channel
 import org.slf4j.LoggerFactory
+import ru.gdcn.gdegde.Broadcaster
+import ru.gdcn.gdegde.ServerMessage
+import ru.gdcn.gdegde.ServerMethods
 
 object Commands {
 

@@ -1,3 +1,5 @@
+package ru.gdcn.gdegde
+
 import org.jboss.netty.channel.Channel
 import org.json.simple.JSONObject
 import org.json.simple.JSONValue

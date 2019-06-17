@@ -1,7 +1,7 @@
-package database
+package ru.gdcn.gdegde.database
 
-import Achievement
-import User
+import ru.gdcn.gdegde.Achievement
+import ru.gdcn.gdegde.User
 
 interface IDBConnector {
 

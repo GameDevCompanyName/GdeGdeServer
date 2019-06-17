@@ -1,3 +1,6 @@
+package ru.gdcn.gdegde
+
+import Commands
 import org.jboss.netty.channel.Channel
 import org.slf4j.LoggerFactory
 
