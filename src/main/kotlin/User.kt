@@ -1,11 +1,11 @@
 import org.jboss.netty.channel.Channel
 import org.slf4j.LoggerFactory
 
-class User(private val userChannel: Channel?, var login: String, val color: String?, val role: String?) {
+class User(private val userChannel: Channel?, var login: String, val pass: String?, val color: String?, val role: String?) {
 
     private val logger = LoggerFactory.getLogger(User::class.java)
 
-    constructor(login: String):this(null, login, null, null)
+    constructor(login: String):this(null, login, null,null, null)
 
     fun sendMessage(message: String) {
         if (userChannel == null)
