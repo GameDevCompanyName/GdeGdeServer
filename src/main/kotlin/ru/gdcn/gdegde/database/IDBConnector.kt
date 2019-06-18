@@ -1,6 +1,7 @@
 package ru.gdcn.gdegde.database
 
 import ru.gdcn.gdegde.Achievement
+import ru.gdcn.gdegde.Role
 import ru.gdcn.gdegde.User
 
 interface IDBConnector {
@@ -13,8 +14,9 @@ interface IDBConnector {
 
     fun getAchievements(login: String): Collection<Achievement>
 
-    //TODO лог ошибок
+    fun logError(text: String)
 
+    fun changeRole(login: String, newRole: Role)
     //TODO изменение роли
 
     fun addAchievement(login: String, idAchievement: Int)
