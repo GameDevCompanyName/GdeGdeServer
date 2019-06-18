@@ -71,6 +71,15 @@ class DBConnector : IDBConnector {
         return Utilities.resultSetToAchievementCollection(resultSet)
     }
 
+    override fun logError(text: String) {
+        val error = Error(text)
+        insertDataInTable("error", listOf(error))
+    }
+
+    override fun changeRole(login: String, newRole: Role) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     private fun getResultSetOfProcedure(procedureCall: String): ResultSet {
         logger.info("Executing procedure: $procedureCall")
         if (connection == null) {
