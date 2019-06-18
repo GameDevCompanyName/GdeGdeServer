@@ -45,11 +45,12 @@ object ServerMethods {
         //TODO давать ачивку за регистрацию
         if (user == null) {
             logger.info("Такого пользователя в базе ещё нет, создаю нового для: $login")
-            user = dbConnector.addNewUser(login, password, Utilities.generateRandomHex())//TODO добавить цвет из утилит
+            user = dbConnector.addNewUser(login, password, Utilities.generateRandomHex())
             logger.info("Пользователь создан: $login")
             if (user != null) {
                 user.userChannel = userChannel
                 user.sendMessage(ServerMessage.loginSuccess())
+                user.sendMessage(ServerMessage.userColor(user.login, user.color!!))
                 Broadcaster.userLoggedIn(user)
             } else {
                 logger.info("Не удалось создать пользователя: $login")
@@ -124,6 +125,10 @@ object ServerMethods {
 
     fun getAchievements(userChannel: Channel): String{
         val user = Broadcaster.getUser(userChannel)
-        return dbConnector.getAchievements(user.login).joinToString("\n") //TODO сделать красивый вывод ачивок
+        return dbConnector.getAchievements(user.login).joinToString("\n----------\n") + "\n" //TODO сделать красивый вывод ачивок
+    }
+
+    fun changeRole(login: String, idRole: Int) {
+
     }
 }

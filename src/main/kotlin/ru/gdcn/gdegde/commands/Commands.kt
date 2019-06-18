@@ -17,6 +17,10 @@ object Commands {
                 ServerMethods.kickUser(null, commands[1])
             else
                 print("Неверная команда.")
+            "changerole" -> if (commands.size == 3)
+                ServerMethods.changeRole(commands[1], commands[2])
+            else
+                print("Неверная команда.")
             "shutdown" -> {
                 print("Сервер остановил свою работу.")
                 System.exit(0)

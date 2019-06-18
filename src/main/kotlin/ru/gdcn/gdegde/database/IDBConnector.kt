@@ -16,4 +16,6 @@ interface IDBConnector {
     //TODO лог ошибок
 
     //TODO изменение роли
+
+    fun addAchievement(login: String, idAchievement: Int)
 }
