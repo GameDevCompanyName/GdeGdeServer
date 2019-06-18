@@ -77,7 +77,48 @@ class DBConnector : IDBConnector {
     }
 
     override fun changeRole(login: String, newRole: Role) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val roleID = when (newRole){
+            Role.USER -> 1
+            Role.ADMIN -> 2
+        }
+        getResultSetOfProcedure("changeRole($login, $roleID)")
+    }
+
+    override fun getAchievement(idAchievement: Int): Achievement {
+        val resultSet = getResultSetOfSelect(tableName = "achievement", whereCondition = "id = $idAchievement")
+        resultSet.next()
+        return Achievement(
+            idAchievement,
+            resultSet.getString("title"),
+            resultSet.getString("description")
+        )
+    }
+
+    override fun addAchievement(login: String, idAchievement: Int) {
+        getResultSetOfProcedure("addClientAchievement($login, $idAchievement)")
+    }
+
+    override fun saveMessage(login: String, message: String) {
+        getResultSetOfProcedure("addMessage($login, $message)")
+    }
+
+    override fun saveServerMessage(message: String) {
+        getResultSetOfProcedure("addServerMessage($message)")
+    }
+
+    override fun getMessages(quantity: Int): Collection<String> {
+        val resultSet = getResultSetOfSelect(
+            tableName = "message",
+            limit = quantity,
+            orderBy = "date DESC"
+        )
+        val list = mutableListOf<String>()
+        while (resultSet.next()){
+            list.add(
+                resultSet.getString("text")
+            )
+        }
+        return list
     }
 
     private fun getResultSetOfProcedure(procedureCall: String): ResultSet {
