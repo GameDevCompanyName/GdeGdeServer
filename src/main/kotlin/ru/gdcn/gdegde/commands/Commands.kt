@@ -64,7 +64,7 @@ object Commands {
                 ServerMethods.kickUser(userChannel, commands[2])
             } else
                 userChannel.write(ServerMessage.serverMessage("Неверная команда!"))
-            "easter" -> TODO()
+            "easter" -> ServerMethods.addEasterAchiev(userChannel)
             "shutdown" -> ServerMethods.doomsDay(userChannel)
             else -> userChannel.write(ServerMessage.serverMessage("Нет такой команды."))
         }
