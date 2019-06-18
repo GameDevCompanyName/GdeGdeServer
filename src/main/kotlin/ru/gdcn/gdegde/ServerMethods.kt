@@ -57,7 +57,12 @@ object ServerMethods {
             } else {
                 logger.info("Не удалось создать пользователя: $login")
                 userChannel.write(ServerMessage.serverMessage("Не удалось зарегистрировать пользователя!"))
+                return
             }
+        }
+
+        for (m in dbConnector.getMessages(50)) {
+            user.sendMessage(m)
         }
     }
 
