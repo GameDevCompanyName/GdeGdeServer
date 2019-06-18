@@ -175,6 +175,6 @@ object ServerMethods {
         val user = Broadcaster.getUser(userChannel)
         dbConnector.addAchievement(user.login, Achievement.EASTER)
         user.sendMessage(ServerMessage.serverMessage("Вы получили достижение:\n " +
-                "${dbConnector.getAchievement(Achievement.NEW_GUY)}"))
+                "${dbConnector.getAchievement(Achievement.EASTER)}"))
     }
 }
