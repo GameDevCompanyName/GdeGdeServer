@@ -44,7 +44,11 @@ object Commands {
                                 "/server help"
                     ) //TODO добавить команд
                 )
-            "achievements" -> userChannel.write(ServerMethods.getAchievements(userChannel))
+            "achievements" -> userChannel.write(
+                ServerMessage.serverMessage(
+                    ServerMethods.getAchievements(userChannel)
+                )
+            )
             "kick" -> if (commands.size == 3) {
                 ServerMethods.kickUser(userChannel, commands[2])
             } else
