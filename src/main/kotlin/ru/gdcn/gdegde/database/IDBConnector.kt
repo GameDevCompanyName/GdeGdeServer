@@ -17,7 +17,6 @@ interface IDBConnector {
     fun logError(text: String)
 
     fun changeRole(login: String, newRole: Role)
-    //TODO изменение роли
 
     fun addAchievement(login: String, idAchievement: Int)
 }

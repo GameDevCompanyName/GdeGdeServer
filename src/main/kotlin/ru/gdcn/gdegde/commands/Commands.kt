@@ -3,13 +3,13 @@ import org.slf4j.LoggerFactory
 import ru.gdcn.gdegde.Broadcaster
 import ru.gdcn.gdegde.ServerMessage
 import ru.gdcn.gdegde.ServerMethods
+import java.lang.ClassCastException
 
 object Commands {
 
     private val logger = LoggerFactory.getLogger(Commands::class.java)
 
     fun executeServerCommand(commands: Array<String>) {
-        //TODO команда по смене роли пользователю
         when (commands[0]) {
             "clients" -> for (user in Broadcaster.users)
                 print(user.login)
@@ -17,8 +17,13 @@ object Commands {
                 ServerMethods.kickUser(null, commands[1])
             else
                 print("Неверная команда.")
-            "changerole" -> if (commands.size == 3)
-                ServerMethods.changeRole(commands[1], commands[2])
+            "changerole" -> if (commands.size == 3) {
+                try {
+                    ServerMethods.changeRole(commands[1], commands[2].toInt())
+                } catch (e: ClassCastException){
+                    print("Кажись команда введена неверно.")
+                }
+            }
             else
                 print("Неверная команда.")
             "shutdown" -> {
@@ -34,7 +39,6 @@ object Commands {
             userChannel.write(ServerMessage.serverMessage("Нет такой команды."))
             return
         }
-        //TODO команда по смене роли пользователю
         when (commands[1]) {
             "clients" -> for (user in Broadcaster.users)
                 userChannel.write(ServerMessage.serverMessage(user.login + "\n"))
@@ -45,8 +49,11 @@ object Commands {
                         "Доступные команды:\n" +
                                 "/server clients\n" +
                                 "/server echo <your text>\n" +
+                                "/server achievements\n" +
+                                "/server kick <user name>\n" +
+                                "/server shutdown\n" +
                                 "/server help"
-                    ) //TODO добавить команд
+                    )
                 )
             "achievements" -> userChannel.write(
                 ServerMessage.serverMessage(
@@ -57,7 +64,7 @@ object Commands {
                 ServerMethods.kickUser(userChannel, commands[2])
             } else
                 userChannel.write(ServerMessage.serverMessage("Неверная команда!"))
-            "shutdown" -> TODO() //Отключать сервер, если это сделал админ
+            "shutdown" -> ServerMethods.doomsDay(userChannel)
             else -> userChannel.write(ServerMessage.serverMessage("Нет такой команды."))
         }
     }

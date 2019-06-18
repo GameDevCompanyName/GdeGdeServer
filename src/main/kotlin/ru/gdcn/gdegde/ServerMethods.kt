@@ -120,15 +120,26 @@ object ServerMethods {
         if (userChannel == null || Broadcaster.getUser(userChannel).role!!.equals("admin")) {
             Broadcaster.userKicked(login)
             Broadcaster.serverMessageBroadcast("$login был исключен.")
+        } else {
+            userChannel.write(ServerMessage.serverMessage("У вас нет прав на выполнение данной команды."))
         }
     }
 
     fun getAchievements(userChannel: Channel): String{
         val user = Broadcaster.getUser(userChannel)
-        return dbConnector.getAchievements(user.login).joinToString("\n----------\n") + "\n" //TODO сделать красивый вывод ачивок
+        return "\n" + dbConnector.getAchievements(user.login).joinToString("\n----------\n") + "\n"
     }
 
     fun changeRole(login: String, idRole: Int) {
+        logger.info("Меня роль юзеру: $login на ${Utilities.intToRole(idRole)}")
+        dbConnector.changeRole(login, Utilities.intToRole(idRole))
+    }
 
+    fun doomsDay(userChannel: Channel) {
+        if (Broadcaster.getUser(userChannel).role!!.equals("admin")) {
+            System.exit(0)
+        } else {
+            userChannel.write(ServerMessage.serverMessage("У вас нет прав на выполнение данной команды."))
+        }
     }
 }
