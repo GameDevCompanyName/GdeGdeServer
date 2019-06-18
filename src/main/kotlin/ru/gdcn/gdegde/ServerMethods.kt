@@ -53,13 +53,13 @@ object ServerMethods {
                 user.userChannel = userChannel
                 user.sendMessage(ServerMessage.loginSuccess())
                 user.sendMessage(ServerMessage.userColor(user.login, user.color!!))
-                dbConnector.addAchievement(user.login, Achievement.NEW_GUY)
-                user.sendMessage(ServerMessage.serverMessage("Вы получили достижение:\n " +
-                        "${dbConnector.getAchievement(Achievement.NEW_GUY)}"))
                 for (m in dbConnector.getMessages(50).reversed()) {
                     user.sendMessage(m)
                 }
                 Broadcaster.userLoggedIn(user)
+                dbConnector.addAchievement(user.login, Achievement.NEW_GUY)
+                user.sendMessage(ServerMessage.serverMessage("Вы получили достижение:\n " +
+                        "${dbConnector.getAchievement(Achievement.NEW_GUY)}"))
             } else {
                 logger.info("Не удалось создать пользователя: $login")
                 userChannel.write(ServerMessage.serverMessage("Не удалось зарегистрировать пользователя!"))
