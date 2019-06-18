@@ -81,7 +81,7 @@ class DBConnector : IDBConnector {
             Role.USER -> 1
             Role.ADMIN -> 2
         }
-        getResultSetOfProcedure("changeRole($login, $roleID)")
+        getResultSetOfProcedure("changeRole('$login', $roleID)")
     }
 
     override fun getAchievement(idAchievement: Int): Achievement {
@@ -95,15 +95,15 @@ class DBConnector : IDBConnector {
     }
 
     override fun addAchievement(login: String, idAchievement: Int) {
-        getResultSetOfProcedure("addClientAchievement($login, $idAchievement)")
+        getResultSetOfProcedure("addClientAchievement('$login', $idAchievement)")
     }
 
     override fun saveMessage(login: String, message: String) {
-        getResultSetOfProcedure("addMessage($login, $message)")
+        getResultSetOfProcedure("addMessage('$login', '$message')")
     }
 
     override fun saveServerMessage(message: String) {
-        getResultSetOfProcedure("addServerMessage($message)")
+        getResultSetOfProcedure("addServerMessage('$message')")
     }
 
     override fun getMessages(quantity: Int): Collection<String> {
@@ -138,6 +138,7 @@ class DBConnector : IDBConnector {
         } catch (e: PSQLException) {
             logger.error("Error while executing SELECT!")
             e.printStackTrace()
+            logError(e.toString())
             exitProcess(1)
         }
     }
@@ -169,6 +170,7 @@ class DBConnector : IDBConnector {
         } catch (e: PSQLException) {
             logger.error("Error while executing SELECT!")
             e.printStackTrace()
+            logError(e.toString())
             exitProcess(1)
         }
     }
