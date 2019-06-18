@@ -155,4 +155,12 @@ object ServerMethods {
             userChannel.write(ServerMessage.serverMessage("У вас нет прав на выполнение данной команды."))
         }
     }
+
+    fun saveMessage(jsonMessage: String) {
+        dbConnector.saveServerMessage(jsonMessage)
+    }
+
+    fun saveMessage(login: String, jsonMessage: String) {
+        dbConnector.saveMessage(login, jsonMessage)
+    }
 }

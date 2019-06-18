@@ -87,12 +87,14 @@ object Broadcaster {
     }
 
     private fun sendMessageAll(JSONMessage: String) {
+        ServerMethods.saveMessage(JSONMessage)
         for (user in loggedChannels.values) {
             user.sendMessage(JSONMessage)
         }
     }
 
     private fun sendMessageAll(sender: User, JSONMessage: String) {
+        ServerMethods.saveMessage(sender.login, JSONMessage)
         for (user in loggedChannels.values) {
             if (user.login == sender.login)
                 continue
