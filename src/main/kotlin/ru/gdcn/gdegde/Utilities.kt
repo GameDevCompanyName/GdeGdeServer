@@ -20,7 +20,11 @@ object Utilities {
         val result = mutableListOf<Achievement>()
         while (resultSet.next()) {
             result.add(
-                Achievement(resultSet.getString("title"), resultSet.getString("description"))
+                Achievement(
+                    resultSet.getInt("id"),
+                    resultSet.getString("title"),
+                    resultSet.getString("description")
+                )
             )
         }
         return result

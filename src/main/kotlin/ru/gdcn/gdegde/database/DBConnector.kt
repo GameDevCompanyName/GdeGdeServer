@@ -144,7 +144,8 @@ class DBConnector : IDBConnector {
         } catch (e: PSQLException) {
             logger.error("Oops! Could not prepare statement - something wrong with connection!")
             e.printStackTrace()
-            exitProcess(1)
+            logError(e.toString())
+            return
         }
 
         var count: Int
@@ -171,7 +172,8 @@ class DBConnector : IDBConnector {
         } catch (e: PSQLException) {
             logger.error("Oops! Could not execute statement! Something went wrong!")
             e.printStackTrace()
-            exitProcess(1)
+            logError(e.toString())
+            return
         }
     }
 
@@ -196,7 +198,8 @@ class DBConnector : IDBConnector {
         } catch (e: PSQLException) {
             logger.error("Oops! Cannot clean table $tableName! Something went wrong!")
             e.printStackTrace()
-            exitProcess(1)
+            logError(e.toString())
+            return
         }
         logger.info("Cleaned table successfully!")
     }
@@ -216,7 +219,8 @@ class DBConnector : IDBConnector {
         } catch (e: PSQLException) {
             logger.error("Oops! Cannot do that! Something went wrong!")
             e.printStackTrace()
-            exitProcess(1)
+            logError(e.toString())
+            return
         }
     }
 
@@ -243,7 +247,8 @@ class DBConnector : IDBConnector {
         } catch (e: PSQLException) {
             logger.error("Oops! Cannot do that! Something went wrong!")
             e.printStackTrace()
-            exitProcess(1)
+            logError(e.toString())
+            return
         }
         logger.info("Success!")
     }
