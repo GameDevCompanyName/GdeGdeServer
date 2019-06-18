@@ -61,7 +61,7 @@ object ServerMethods {
             }
         }
 
-        for (m in dbConnector.getMessages(50)) {
+        for (m in dbConnector.getMessages(50).reversed()) {
             user.sendMessage(m)
         }
     }
