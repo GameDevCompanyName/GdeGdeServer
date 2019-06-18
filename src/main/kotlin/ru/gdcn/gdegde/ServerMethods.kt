@@ -170,4 +170,9 @@ object ServerMethods {
     fun saveMessage(login: String, jsonMessage: String) {
         dbConnector.saveMessage(login, jsonMessage)
     }
+
+    fun addEasterAchiev(userChannel: Channel) {
+        val user = Broadcaster.getUser(userChannel)
+        dbConnector.addAchievement(user.login, Achievement.EASTER)
+    }
 }

@@ -34,7 +34,7 @@ class User(var userChannel: Channel?, var login: String, val pass: String?, val 
         if (this === other) return true
         if (other == null || javaClass != other.javaClass) return false
 
-        return login == other
+        return login == (other as User).login
     }
 
     override fun hashCode(): Int {
