@@ -34,6 +34,9 @@ object ServerMethods {
                 user.userChannel = userChannel
                 user.sendMessage(ServerMessage.loginSuccess())
                 user.sendMessage(ServerMessage.userColor(user.login, user.color!!))
+                for (m in dbConnector.getMessages(50).reversed()) {
+                    user.sendMessage(m)
+                }
                 Broadcaster.userLoggedIn(user)
             } else {
                 logger.info("Неверный пароль для: $login")
@@ -53,16 +56,15 @@ object ServerMethods {
                 dbConnector.addAchievement(user.login, Achievement.NEW_GUY)
                 user.sendMessage(ServerMessage.serverMessage("Вы получили достижение:\n " +
                         "${dbConnector.getAchievement(Achievement.NEW_GUY)}"))
+                for (m in dbConnector.getMessages(50).reversed()) {
+                    user.sendMessage(m)
+                }
                 Broadcaster.userLoggedIn(user)
             } else {
                 logger.info("Не удалось создать пользователя: $login")
                 userChannel.write(ServerMessage.serverMessage("Не удалось зарегистрировать пользователя!"))
                 return
             }
-        }
-
-        for (m in dbConnector.getMessages(50).reversed()) {
-            user.sendMessage(m)
         }
     }
 
