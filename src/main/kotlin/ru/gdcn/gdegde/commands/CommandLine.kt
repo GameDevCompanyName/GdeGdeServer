@@ -1,4 +1,6 @@
 import org.slf4j.LoggerFactory
+import ru.gdcn.gdegde.Broadcaster
+import ru.gdcn.gdegde.ServerMessage
 import ru.gdcn.gdegde.ServerMethods
 
 import java.util.Scanner

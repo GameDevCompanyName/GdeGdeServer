@@ -13,4 +13,7 @@ interface IDBConnector {
 
     fun getAchievements(login: String): Collection<Achievement>
 
+    //TODO лог ошибок
+
+    //TODO изменение роли
 }

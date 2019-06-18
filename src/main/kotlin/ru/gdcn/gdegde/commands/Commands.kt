@@ -9,6 +9,7 @@ object Commands {
     private val logger = LoggerFactory.getLogger(Commands::class.java)
 
     fun executeServerCommand(commands: Array<String>) {
+        //TODO команда по смене роли пользователю
         when (commands[0]) {
             "clients" -> for (user in Broadcaster.users)
                 print(user.login)
@@ -29,6 +30,7 @@ object Commands {
             userChannel.write(ServerMessage.serverMessage("Нет такой команды."))
             return
         }
+        //TODO команда по смене роли пользователю
         when (commands[1]) {
             "clients" -> for (user in Broadcaster.users)
                 userChannel.write(ServerMessage.serverMessage(user.login + "\n"))

@@ -66,12 +66,12 @@ object Broadcaster {
         if (!channelOnline)
             return
         val userToDelete = loggedChannels[userChannel]
-        logger.info("Удаляю пользователя из списка залогиненых: " + userToDelete.login)
+        logger.info("Удаляю пользователя из списка залогиненых: " + userToDelete!!.login)
         loggedChannels.remove(userChannel)
         loggedUsers.remove(userToDelete)
         sendMessageAll(
             ServerMessage.serverMessage(
-                TextFormer.userDisconnected(userToDelete.getLogin())
+                TextFormer.userDisconnected(userToDelete.login)
             )
         )
     }

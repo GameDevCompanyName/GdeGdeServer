@@ -3,15 +3,16 @@ package ru.gdcn.gdegde
 import Commands
 import org.jboss.netty.channel.Channel
 import org.slf4j.LoggerFactory
+import ru.gdcn.gdegde.database.DBConnector
+import ru.gdcn.gdegde.database.IDBConnector
 
 import java.util.regex.Pattern
 
 object ServerMethods {
     private val logger = LoggerFactory.getLogger(ServerMethods::class.java)
-    private lateinit var dbConnector: IDBConnector
+    private val dbConnector: IDBConnector = DBConnector()
 
     init {
-        //TODO добавить конструктор
         dbConnector.initDBConnector()
     }
 
@@ -41,9 +42,10 @@ object ServerMethods {
         }
 
         //Регистрация пользователя
+        //TODO давать ачивку за регистрацию
         if (user == null) {
             logger.info("Такого пользователя в базе ещё нет, создаю нового для: $login")
-            user = dbConnector.addNewUser(login, password, "")//TODO добавить цвет из утилит
+            user = dbConnector.addNewUser(login, password, Utilities.generateRandomHex())//TODO добавить цвет из утилит
             logger.info("Пользователь создан: $login")
             if (user != null) {
                 user.userChannel = userChannel
@@ -114,7 +116,7 @@ object ServerMethods {
     }
 
     fun kickUser(userChannel: Channel?, login: String) {
-        if (userChannel == null || Broadcaster.getUser(userChannel).role.equals("admin")) {
+        if (userChannel == null || Broadcaster.getUser(userChannel).role!!.equals("admin")) {
             Broadcaster.userKicked(login)
             Broadcaster.serverMessageBroadcast("$login был исключен.")
         }
@@ -122,6 +124,6 @@ object ServerMethods {
 
     fun getAchievements(userChannel: Channel): String{
         val user = Broadcaster.getUser(userChannel)
-        return dbConnector.getAchievements(user.login).toString() //TODO сделать красивый вывод ачивок
+        return dbConnector.getAchievements(user.login).joinToString("\n") //TODO сделать красивый вывод ачивок
     }
 }
