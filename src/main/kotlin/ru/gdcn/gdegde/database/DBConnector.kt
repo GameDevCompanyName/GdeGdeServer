@@ -52,7 +52,7 @@ class DBConnector : IDBConnector {
     }
 
     override fun getUser(login: String): User? {
-        val resultSet = getResultSetOfSelect(tableName = "client", limit = 1, whereCondition = "name = $login")
+        val resultSet = getResultSetOfSelect(tableName = "client", limit = 1, whereCondition = "name = '$login'")
         var user : User? = null
         if (resultSet.next()){
             user = User(
@@ -67,7 +67,7 @@ class DBConnector : IDBConnector {
     }
 
     override fun getAchievements(login: String): Collection<Achievement> {
-        val resultSet = getResultSetOfProcedure("getClientAchievements($login)")
+        val resultSet = getResultSetOfProcedure("getClientAchievements('$login')")
         return Utilities.resultSetToAchievementCollection(resultSet)
     }
 
@@ -109,11 +109,11 @@ class DBConnector : IDBConnector {
             logger.info("Executing query")
             return statement.executeQuery(
                 StatementBuilder.selectFieldsFromTable(
-                    tableName,
-                    limit,
-                    orderBy,
-                    whereCondition,
-                    *fields
+                    tableName = tableName,
+                    limit = limit,
+                    orderBy = orderBy,
+                    whereCondition = whereCondition,
+                    fields = *fields
                 )
             )
         } catch (e: PSQLException) {

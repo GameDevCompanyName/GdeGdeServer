@@ -21,6 +21,7 @@ object StatementBuilder {
             statementText.append("LIMIT $limit")
         }
         statementText.append(";")
+        println(statementText.toString())
         return statementText.toString()
     }
 
