@@ -3,6 +3,7 @@ package ru.gdcn.gdegde.database
 import ru.gdcn.gdegde.Achievement
 import ru.gdcn.gdegde.Role
 import ru.gdcn.gdegde.User
+import java.util.*
 
 interface IDBConnector {
 
@@ -14,9 +15,15 @@ interface IDBConnector {
 
     fun getAchievements(login: String): Collection<Achievement>
 
+    fun getAchievement(idAchievement: Int): Achievement
+
     fun logError(text: String)
 
     fun changeRole(login: String, newRole: Role)
 
     fun addAchievement(login: String, idAchievement: Int)
+
+    fun saveMessage(login: String, message: String)
+
+    fun getMessages(quantity: Int): Collection<String>
 }

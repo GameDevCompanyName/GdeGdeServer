@@ -42,7 +42,6 @@ object ServerMethods {
         }
 
         //Регистрация пользователя
-        //TODO давать ачивку за регистрацию
         if (user == null) {
             logger.info("Такого пользователя в базе ещё нет, создаю нового для: $login")
             user = dbConnector.addNewUser(login, password, Utilities.generateRandomHex())
@@ -51,6 +50,9 @@ object ServerMethods {
                 user.userChannel = userChannel
                 user.sendMessage(ServerMessage.loginSuccess())
                 user.sendMessage(ServerMessage.userColor(user.login, user.color!!))
+                dbConnector.addAchievement(user.login, Achievement.NEW_GUY)
+                user.sendMessage(ServerMessage.serverMessage("Вы получили достижение:\n " +
+                        "${dbConnector.getAchievement(Achievement.NEW_GUY)}"))
                 Broadcaster.userLoggedIn(user)
             } else {
                 logger.info("Не удалось создать пользователя: $login")
@@ -119,10 +121,21 @@ object ServerMethods {
     fun kickUser(userChannel: Channel?, login: String) {
         if (userChannel == null || Broadcaster.getUser(userChannel).role!!.equals("admin")) {
             Broadcaster.userKicked(login)
+            if (!checkAlreadyAchiev(login, Achievement.BAD_GUY))
+                dbConnector.addAchievement(login, Achievement.BAD_GUY)
             Broadcaster.serverMessageBroadcast("$login был исключен.")
         } else {
             userChannel.write(ServerMessage.serverMessage("У вас нет прав на выполнение данной команды."))
         }
+    }
+
+    private fun checkAlreadyAchiev(login: String, idAchiev: Int): Boolean {
+        val achievements = dbConnector.getAchievements(login)
+        for (a in achievements){
+           if (a.id == idAchiev)
+               return true
+        }
+        return false
     }
 
     fun getAchievements(userChannel: Channel): String{
