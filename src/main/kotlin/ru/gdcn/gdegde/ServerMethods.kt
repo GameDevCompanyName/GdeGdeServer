@@ -126,7 +126,7 @@ object ServerMethods {
     }
 
     fun kickUser(userChannel: Channel?, login: String) {
-        if (userChannel == null || Broadcaster.getUser(userChannel).role!!.equals("admin")) {
+        if (userChannel == null || Broadcaster.getUser(userChannel).role!! == Role.ADMIN) {
             Broadcaster.userKicked(login)
             if (!checkAlreadyAchiev(login, Achievement.BAD_GUY))
                 dbConnector.addAchievement(login, Achievement.BAD_GUY)
@@ -156,7 +156,7 @@ object ServerMethods {
     }
 
     fun doomsDay(userChannel: Channel) {
-        if (Broadcaster.getUser(userChannel).role!!.equals("admin")) {
+        if (Broadcaster.getUser(userChannel).role!! == Role.ADMIN) {
             System.exit(0)
         } else {
             userChannel.write(ServerMessage.serverMessage("У вас нет прав на выполнение данной команды."))
@@ -177,4 +177,14 @@ object ServerMethods {
         user.sendMessage(ServerMessage.serverMessage("Вы получили достижение:\n " +
                 "${dbConnector.getAchievement(Achievement.EASTER)}"))
     }
+
+    fun seekText(userChannel: Channel, text: String) {
+        val foundMessages = dbConnector.lookForMessages(text)
+        userChannel.write(ServerMessage.serverMessage("Найдено ${foundMessages.size} сообщений:\n-------------\n"))
+        for (msg in foundMessages){
+            userChannel.write(msg)
+        }
+        userChannel.write(ServerMessage.serverMessage("\n-------------\n"))
+    }
+
 }

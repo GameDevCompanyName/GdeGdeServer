@@ -106,6 +106,11 @@ class DBConnector : IDBConnector {
         getResultSetOfProcedure("addServerMessage('$message')")
     }
 
+    override fun lookForMessages(text: String): Collection<String> {
+        val resultSet = getResultSetOfProcedure("lookForMessages('$text')")
+        return Utilities.resultSetToStringCollection(resultSet)
+    }
+
     override fun getMessages(quantity: Int): Collection<String> {
         val resultSet = getResultSetOfSelect(
             tableName = "message",

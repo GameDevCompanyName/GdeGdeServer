@@ -66,6 +66,13 @@ object Commands {
                 userChannel.write(ServerMessage.serverMessage("Неверная команда!"))
             "easter" -> ServerMethods.addEasterAchiev(userChannel)
             "shutdown" -> ServerMethods.doomsDay(userChannel)
+            "seekText" -> {
+                if (commands.size != 3){
+                    userChannel.write(ServerMessage.serverMessage("Неверная команда!"))
+                } else {
+                    ServerMethods.seekText(userChannel, commands[2])
+                }
+            }
             else -> userChannel.write(ServerMessage.serverMessage("Нет такой команды."))
         }
     }

@@ -28,4 +28,7 @@ interface IDBConnector {
     fun saveServerMessage(message: String)
 
     fun getMessages(quantity: Int): Collection<String>
+
+    fun lookForMessages(text: String): Collection<String>
+
 }

@@ -30,4 +30,12 @@ object Utilities {
         return result
     }
 
+    fun resultSetToStringCollection(resultSet: ResultSet): Collection<String> {
+        val list = mutableListOf<String>()
+        while (resultSet.next()){
+            list.add(resultSet.getString("text"))
+        }
+        return list
+    }
+
 }
