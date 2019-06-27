@@ -33,7 +33,7 @@ object Utilities {
     fun resultSetToStringCollection(resultSet: ResultSet): Collection<String> {
         val list = mutableListOf<String>()
         while (resultSet.next()){
-            list.add(resultSet.getString("text"))
+            list.add(resultSet.getString("message"))
         }
         return list
     }
